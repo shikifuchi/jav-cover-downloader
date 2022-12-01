@@ -31,8 +31,12 @@ public class Downloader {
             final var saveInfoFile =
                     downloadRequest.getSavePath().substring(0,downloadRequest.getSavePath().lastIndexOf("."))+".json";
             System.out.println("Save Meta Data to " + saveInfoFile);
+            final var infoFile = new File(saveInfoFile);
+            if(infoFile.exists()){
+                infoFile.delete();
+            }
             final var infoIs = new ByteArrayInputStream(downloadRequest.getMetaData().getBytes(StandardCharsets.UTF_8));
-            try (final var outputStream = new BufferedOutputStream(new FileOutputStream(saveInfoFile))) {
+            try (final var outputStream = new BufferedOutputStream(new FileOutputStream(infoFile))) {
                 NIOUtils.copy(Channels.newChannel(infoIs), Channels.newChannel(outputStream));
             } catch (IOException e) {
                 throw new RuntimeException(e);
