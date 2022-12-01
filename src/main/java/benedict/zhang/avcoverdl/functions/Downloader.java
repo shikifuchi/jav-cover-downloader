@@ -12,10 +12,11 @@ import java.util.function.Function;
 
 public class Downloader {
     public static Consumer<DownloadRequest> downloadTask = downloadRequest -> {
-        System.out.println(downloadRequest.toString());
         if (downloadRequest.getCanRequest()) {
+            System.out.println(downloadRequest.toString());
             final var saveFile = new File(downloadRequest.getSavePath());
             if (!saveFile.exists()) {
+                System.out.println("Save Cover to " + downloadRequest.getSavePath());
                 try (final var is = HttpProcessFunctions.RequestAPI
                         .andThen(HttpProcessFunctions.ToInputStream)
                         .apply(downloadRequest.getCoverUrl())) {
@@ -29,10 +30,10 @@ public class Downloader {
                 }
             }
             final var saveInfoFile =
-                    downloadRequest.getSavePath().substring(0,downloadRequest.getSavePath().lastIndexOf("."))+".json";
-            System.out.println("Save Meta Data to " + saveInfoFile);
+                    downloadRequest.getSavePath().substring(0, downloadRequest.getSavePath().lastIndexOf(".")) + ".json";
             final var infoFile = new File(saveInfoFile);
-            if(!infoFile.exists()){
+            if (!infoFile.exists()) {
+                System.out.println("Save Meta Data to " + saveInfoFile);
                 final var infoIs = new ByteArrayInputStream(downloadRequest.getMetaData().getBytes(StandardCharsets.UTF_8));
                 try (final var outputStream = new BufferedOutputStream(new FileOutputStream(infoFile))) {
                     NIOUtils.copy(Channels.newChannel(infoIs), Channels.newChannel(outputStream));
