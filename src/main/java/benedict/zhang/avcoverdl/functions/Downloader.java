@@ -29,7 +29,7 @@ public class Downloader {
                 }
             }
             final var saveInfoFile =
-                    downloadRequest.getSavePath().substring(0,downloadRequest.getSavePath().indexOf("."))+".json";
+                    downloadRequest.getSavePath().substring(0,downloadRequest.getSavePath().lastIndexOf("."))+".json";
             System.out.println("Save Meta Data to " + saveInfoFile);
             final var infoIs = new ByteArrayInputStream(downloadRequest.getMetaData().getBytes(StandardCharsets.UTF_8));
             try (final var outputStream = new BufferedOutputStream(new FileOutputStream(saveInfoFile))) {
