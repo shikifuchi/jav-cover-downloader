@@ -1,9 +1,12 @@
 package benedict.zhang.avcoverdl.datamodel;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class JAVHTMLDoc{
@@ -17,6 +20,10 @@ public class JAVHTMLDoc{
     private Optional<String> coverSrc = Optional.empty();
 
     private Optional<String> movieUrl = Optional.empty();
+
+    @Getter
+    private JAVMetaData metaData;
+
     private JAVHTMLDoc(String movieID,Document aDocument){
         this.document = aDocument;
         this.movieID = movieID;
@@ -127,5 +134,45 @@ public class JAVHTMLDoc{
                 ", coverSrc=" + coverSrcStr +
                 ", movieUrl=" + movieUrlStr +
                 '}';
+    }
+
+    public void parseMetaData(){
+        metaData = new JAVMetaData();
+        metaData.setId(movieID);
+        metaData.setTitle(parseTitle());
+        final var infoElement = document.getElementById(HtmlConstants.INFO);
+        metaData.setActors(parseActor(infoElement));
+        metaData.setPublishDate(parsePublishDate(infoElement));
+    }
+
+    private String parseTitle(){
+        final var movieTitleElement = document.getElementById(HtmlConstants.TITLE_ID);
+        if(movieTitleElement != null){
+            final var title = movieTitleElement.getElementsByTag(HtmlConstants.LINK).first().text();
+            return title;
+        }
+        return JAVMetaData.NO_VALUE;
+    }
+
+    private String[] parseActor(Element infoElement){
+        final var actorElement = infoElement.getElementById(HtmlConstants.CAST);
+        final var actorLinks = actorElement.getElementsByTag(HtmlConstants.LINK);
+        final var actors = new ArrayList<String>();
+        for(var link : actorLinks){
+            actors.add(link.text());
+        }
+        if(!actors.isEmpty()){
+            return actors.toArray(new String[actors.size()]);
+        }
+        return new String[]{};
+    }
+
+    private String parsePublishDate(Element infoElement){
+        final var publishDateElement = infoElement.getElementById(HtmlConstants.PUBLISH_DATE);
+        final var dateString = publishDateElement.select(".text").first().text();
+        if(StringUtils.isNotEmpty(dateString)){
+            return dateString;
+        }
+        return JAVMetaData.NO_VALUE;
     }
 }

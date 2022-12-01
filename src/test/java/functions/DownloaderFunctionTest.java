@@ -23,6 +23,8 @@ public class DownloaderFunctionTest {
             try (ResponseBody body = response.body()) {
                 final var javDoc = JAVHTMLDoc.createDocument("GVG-038",body.string());
                 System.out.println(javDoc.toString());
+                javDoc.parseMetaData();
+                System.out.println(javDoc.getMetaData().toString());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -38,6 +40,8 @@ public class DownloaderFunctionTest {
             try (ResponseBody body = response.body()) {
                 final var javDoc = JAVHTMLDoc.createDocument("GVG-238",body.string());
                 System.out.println(javDoc.toString());
+                javDoc.parseMetaData();
+                System.out.println(javDoc.getMetaData().toString());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }

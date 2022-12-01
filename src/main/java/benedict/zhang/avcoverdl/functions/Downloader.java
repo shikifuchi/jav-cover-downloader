@@ -6,6 +6,7 @@ import benedict.zhang.avcoverdl.utils.NIOUtils;
 
 import java.io.*;
 import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -14,15 +15,25 @@ public class Downloader {
         System.out.println(downloadRequest.toString());
         if (downloadRequest.getCanRequest()) {
             final var saveFile = new File(downloadRequest.getSavePath());
-            if (saveFile.exists()) return;
-            try (final var is = HttpProcessFunctions.RequestAPI
-                    .andThen(HttpProcessFunctions.ToInputStream)
-                    .apply(downloadRequest.getCoverUrl())) {
-                try (final var outputStream = new BufferedOutputStream(new FileOutputStream(saveFile))) {
-                    NIOUtils.copy(Channels.newChannel(is), Channels.newChannel(outputStream));
+            if (!saveFile.exists()) {
+                try (final var is = HttpProcessFunctions.RequestAPI
+                        .andThen(HttpProcessFunctions.ToInputStream)
+                        .apply(downloadRequest.getCoverUrl())) {
+                    try (final var outputStream = new BufferedOutputStream(new FileOutputStream(saveFile))) {
+                        NIOUtils.copy(Channels.newChannel(is), Channels.newChannel(outputStream));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            }
+            final var saveInfoFile =
+                    downloadRequest.getSavePath().substring(0,downloadRequest.getSavePath().indexOf("."))+".json";
+            System.out.println("Save Meta Data to " + saveInfoFile);
+            final var infoIs = new ByteArrayInputStream(downloadRequest.getMetaData().getBytes(StandardCharsets.UTF_8));
+            try (final var outputStream = new BufferedOutputStream(new FileOutputStream(saveInfoFile))) {
+                NIOUtils.copy(Channels.newChannel(infoIs), Channels.newChannel(outputStream));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -54,7 +65,10 @@ public class Downloader {
         if (coverSrc.isPresent()) {
             request.setCanRequest(Boolean.TRUE);
             final var coverUrl = coverSrc.get();
+            javDoc.parseMetaData();
+            final var metaData = javDoc.getMetaData().toString();
             request.setCoverUrl(coverUrl);
+            request.setMetaData(metaData);
             request.setSavePath(file.getParent() + File.separator + CoverFileName(movieNumber, coverUrl));
         } else {
             System.out.println("extract failed for " + movieNumber);

@@ -1,5 +1,10 @@
 package benedict.zhang.avcoverdl.datamodel;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class DownloadRequest {
 
     private Boolean canRequest = Boolean.FALSE;
@@ -8,29 +13,31 @@ public class DownloadRequest {
 
     private String savePath;
 
-    public Boolean getCanRequest() {
-        return canRequest;
-    }
+    private String metaData;
 
-    public void setCanRequest(Boolean canRequest) {
-        this.canRequest = canRequest;
-    }
-
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
-    public String getSavePath() {
-        return savePath;
-    }
-
-    public void setSavePath(String savePath) {
-        this.savePath = savePath;
-    }
+//    public Boolean getCanRequest() {
+//        return canRequest;
+//    }
+//
+//    public void setCanRequest(Boolean canRequest) {
+//        this.canRequest = canRequest;
+//    }
+//
+//    public String getCoverUrl() {
+//        return coverUrl;
+//    }
+//
+//    public void setCoverUrl(String coverUrl) {
+//        this.coverUrl = coverUrl;
+//    }
+//
+//    public String getSavePath() {
+//        return savePath;
+//    }
+//
+//    public void setSavePath(String savePath) {
+//        this.savePath = savePath;
+//    }
 
     @Override
     public String toString() {
