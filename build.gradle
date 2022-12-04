@@ -3,19 +3,22 @@ plugins {
 
     id 'application'
 }
-
 group 'benedict.zhang'
 version '1.1-SNAPSHOT'
 
 repositories {
     maven {url'https://mirrors.huaweicloud.com/repository/maven/'}
+    maven {
+        allowInsecureProtocol=true
+        url'http://benedicts-mini:3080/api/packages/benedict/maven'
+    }
 }
 
 dependencies {
     // Http request libs - OKHttp
     // define a BOM and its version
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
-
+    implementation("benedict.zhang.jav-lib-core:jav-lib-core:1.0-SNAPSHOT")
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
     implementation("org.apache.commons:commons-lang3:3.12.0")
